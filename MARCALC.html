@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Marketplace Income Calculator</title>
+
+<style>
+:root {
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --danger: #e53935;
+    --accent: #ff5722;
+    --muted: #777;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    padding: env(safe-area-inset-top) 14px env(safe-area-inset-bottom);
+}
+
+.header {
+    text-align: center;
+    padding: 10px 0 18px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.header p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.input-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    margin-bottom: 16px;
+}
+
+.input-card input {
+    width: 100%;
+    padding: 14px;
+    font-size: 22px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.platform {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.platform h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin: 6px 0;
+}
+
+.row.negative {
+    color: var(--danger);
+}
+
+.total {
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+    padding-top: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--accent);
+}
+
+@media (min-width: 700px) {
+    .platforms {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Marketplace Income Calculator</h1>
+    <p>Type once — compare Shopee, Lazada & TikTok Shop</p>
+</div>
+
+<div class="input-card">
+    <input type="number" id="price" placeholder="Enter product price (₱)" inputmode="decimal" oninput="calculate()">
+</div>
+
+<div class="platforms">
+
+<!-- SHOPEE -->
+<div class="platform">
+<h2>Shopee</h2>
+<div class="row"><span>Subtotal</span><span id="s_sub">₱0.00</span></div>
+<div class="row negative"><span>Commission</span><span id="s_com">-₱0.00</span></div>
+<div class="row negative"><span>Service + Support</span><span id="s_srv">-₱0.00</span></div>
+<div class="row negative"><span>Transaction Fee</span><span id="s_trx">-₱0.00</span></div>
+<div class="row negative"><span>Withholding Tax</span><span id="s_tax">-₱0.00</span></div>
+<div class="row total"><span>Seller Income</span><span id="s_inc">₱0.00</span></div>
+</div>
+
+<!-- LAZADA -->
+<div class="platform">
+<h2>Lazada</h2>
+<div class="row"><span>Subtotal</span><span id="l_sub">₱0.00</span></div>
+<div class="row negative"><span>Commission</span><span id="l_com">-₱0.00</span></div>
+<div class="row negative"><span>Payment Fee</span><span id="l_trx">-₱0.00</span></div>
+<div class="row negative"><span>Withholding Tax</span><span id="l_tax">-₱0.00</span></div>
+<div class="row total"><span>Seller Income</span><span id="l_inc">₱0.00</span></div>
+</div>
+
+<!-- TIKTOK -->
+<div class="platform">
+<h2>TikTok Shop</h2>
+<div class="row"><span>Subtotal</span><span id="t_sub">₱0.00</span></div>
+<div class="row negative"><span>Commission</span><span id="t_com">-₱0.00</span></div>
+<div class="row negative"><span>Payment Fee</span><span id="t_trx">-₱0.00</span></div>
+<div class="row negative"><span>Affiliate (10%)</span><span id="t_aff">-₱0.00</span></div>
+<div class="row negative"><span>Withholding Tax</span><span id="t_tax">-₱0.00</span></div>
+<div class="row total"><span>Seller Income</span><span id="t_inc">₱0.00</span></div>
+</div>
+
+</div>
+
+<script>
+function calculate() {
+    let p = parseFloat(document.getElementById("price").value) || 0;
+
+    /* Shopee */
+    let s_com = p * 0.10;
+    let s_srv = (p * 0.0944) + (p > 0 ? 3 : 0);
+    let s_trx = p * 0.02235;
+    let s_tax = p * 0.00392;
+    let s_inc = p - (s_com + s_srv + s_trx + s_tax);
+
+    /* Lazada */
+    let l_com = p * 0.03;
+    let l_trx = p * 0.0224;
+    let l_tax = p * 0.01;
+    let l_inc = p - (l_com + l_trx + l_tax);
+
+    /* TikTok */
+    let t_com = p * 0.04;
+    let t_trx = p * 0.0224;
+    let t_aff = p * 0.10;
+    let t_tax = p * 0.01;
+    let t_inc = p - (t_com + t_trx + t_aff + t_tax);
+
+    document.getElementById("s_sub").innerText =
+    document.getElementById("l_sub").innerText =
+    document.getElementById("t_sub").innerText = "₱" + p.toFixed(2);
+
+    document.getElementById("s_com").innerText = "-₱" + s_com.toFixed(2);
+    document.getElementById("s_srv").innerText = "-₱" + s_srv.toFixed(2);
+    document.getElementById("s_trx").innerText = "-₱" + s_trx.toFixed(2);
+    document.getElementById("s_tax").innerText = "-₱" + s_tax.toFixed(2);
+    document.getElementById("s_inc").innerText = "₱" + s_inc.toFixed(2);
+
+    document.getElementById("l_com").innerText = "-₱" + l_com.toFixed(2);
+    document.getElementById("l_trx").innerText = "-₱" + l_trx.toFixed(2);
+    document.getElementById("l_tax").innerText = "-₱" + l_tax.toFixed(2);
+    document.getElementById("l_inc").innerText = "₱" + l_inc.toFixed(2);
+
+    document.getElementById("t_com").innerText = "-₱" + t_com.toFixed(2);
+    document.getElementById("t_trx").innerText = "-₱" + t_trx.toFixed(2);
+    document.getElementById("t_aff").innerText = "-₱" + t_aff.toFixed(2);
+    document.getElementById("t_tax").innerText = "-₱" + t_tax.toFixed(2);
+    document.getElementById("t_inc").innerText = "₱" + t_inc.toFixed(2);
+}
+</script>
+
+</body>
+</html>
